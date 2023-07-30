@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model apikeys {
+  apikey      String    @id @db.Char(16)
+  access      Int?      @db.SmallInt
+  error       Int?      @db.SmallInt
+  usage_times BigInt?
+  last_usage  DateTime? @db.Timestamp(6)
+  isActive    Boolean?
+  owner_name  String?   @db.Char(30)
+  owner_id    Int?
+}
+
+model factions {
+  id           Int       @id
+  name         String?   @db.Char(30)
+  tag          String?   @db.Char(5)
+  tag_image    String?   @db.Char(15)
+  leader       Int?
+  coleader     Int?
+  last_updated DateTime? @default(now()) @db.Timestamp(6)
+  isAlly       Boolean?
+}
+
+model players {
+  id                    Int        @id
+  gender                String?    @db.Char(6)
+  name                  String     @db.Char(30)
+  status_state          String     @db.Char(10)
+  status_until          Int?
+  revivable             Boolean?
+  last_action_status    String     @db.Char(7)
+  last_action_timestamp Int
+  faction_id            Int
+  last_updated          DateTime?  @db.Timestamp(6)
+  level                 Int        @db.SmallInt
+  latest_snapshot       DateTime?  @db.Date
+  snapshot              snapshot[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model snapshot {
+  player_id       Int
+  defendslost     Int
+  attackswon      Int
+  attackslost     Int
+  useractivity    BigInt
+  energydrinkused Int
+  traveltime      BigInt
+  drugsused       Int
+  territoryjoins  Int
+  territorytime   BigInt
+  territoryclears Int
+  snapshot_date   DateTime @db.Date
+  id              BigInt   @id @default(autoincrement())
+  players         players  @relation(fields: [player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "player")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model spies {
+  id         Int       @default(autoincrement())
+  player_id  Int?
+  lastUpdate DateTime? @db.Timestamp(6)
+  defense    BigInt?
+  dexterity  BigInt?
+  speed      BigInt?
+  strength   BigInt?
+  total      BigInt?
+
+  @@ignore
+}

@@ -34,7 +34,7 @@
                             apikey: r.config.params.key
                         },
                         data:{
-                            isActive: false,
+                            isActive: [2,8,10,13].includes(r.data.error.code) ? false : true,
                             error: r.data.error.code
                         }
                     })

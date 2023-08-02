@@ -44,13 +44,13 @@
                             apikey: r.config.params.key
                         },
                         data:{
-                            isActive: false,
+                            isActive: [2,8,10,13].includes(r.data.error.code) ? false : true,
                             error: r.data.error.code
                         }
                     })
                 }
                 else {                    
-                    const {player_id, personalstats: {defendslost, attackswon, attackslost, useractivity, energydrinkused, traveltime, drugsused, territoryjoins, territorytime, territoryclears}} = r.data
+                    const {player_id, personalstats: {defendslost, attackswon, attackslost, attacksassisted, useractivity, energydrinkused, traveltime, drugsused, territoryjoins, territoryclears}} = r.data
                     const snapshot_date = fastify.moment.unix(r.config.params.timestamp).toISOString()
 
                     await fastify.prisma.players.update({
@@ -66,12 +66,12 @@
                                         defendslost,
                                         attackswon,
                                         attackslost,
+                                        attacksassisted,
                                         useractivity,
                                         energydrinkused,
                                         traveltime,
                                         drugsused,
                                         territoryjoins,
-                                        territorytime,
                                         territoryclears,
                                         snapshot_date
                                     }
@@ -81,6 +81,9 @@
                     })
                 }
             })
+        })
+        .catch( err => {
+            console.log('FAIL', err)
         })
     }
 
